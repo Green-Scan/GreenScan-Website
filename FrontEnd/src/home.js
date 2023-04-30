@@ -9,8 +9,9 @@ import React from "react";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { Paper, CardActionArea, CardMedia, Grid, TableContainer, Table, TableBody, TableHead, TableRow, TableCell, Button, CircularProgress } from "@material-ui/core";
-import cblogo from "./cblogo.PNG";
-import image from "./bg.png";
+import logo from "./logo.png";
+import image1 from "./bg.png";
+import image from "./bg_green_scan.jpg"
 import { DropzoneArea } from 'material-ui-dropzone';
 import { common } from '@material-ui/core/colors';
 import Clear from '@material-ui/icons/Clear';
@@ -62,7 +63,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
     backgroundSize: 'cover',
-    height: "100vh",
+    height: "1080px",
+    width: 'auto',
   },
   imageCard: {
     margin: "auto",
@@ -107,6 +109,14 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'bolder',
     padding: '1px 24px 1px 16px',
   },
+  tableCellHead: {
+    fontSize: '30px',
+    backgroundColor: 'transparent !important',
+    borderColor: 'transparent !important',
+    color: '#000000a6 !important',
+    fontWeight: 'bolder',
+    padding: '1px 24px 1px 16px',
+  },
   tableCell1: {
     fontSize: '14px',
     backgroundColor: 'transparent !important',
@@ -126,23 +136,32 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: "416px",
     width: "100%",
   },
+  label_detail: {
+    backgroundColor: 'white',
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    alignItems: 'center',  
+  },
   detail: {
     backgroundColor: 'white',
     display: 'flex',
     justifyContent: 'center',
     flexDirection: 'column',
     alignItems: 'center',
+    borderRadius: '15px'
   },
   appbar: {
-    backgroundColor: 'rgb(0,0,0,0.2) !important',
-    color: 'turquoise',
+    backgroundColor: '#031b0f99 !important',
+    color: '#25995c',
     boxShadow: 'none',
     fontFamily: 'Livvic',
     overflow: 'hidden',
     position: 'sticky',
     top: 0,
     left: 'auto',
-    right: 0
+    right: 0,
+    fontSize: '2.25 rem'
   },
   loader: {
     color: '#be6a77 !important',
@@ -222,9 +241,10 @@ export const ImageUpload = () => {
               GreenScan
             </Typography>
             <div className={classes.grow} />
-            <Avatar src={cblogo}></Avatar>
+            <Avatar src={logo}></Avatar>
           </Toolbar>
         </AppBar>
+
         <Grid
           className={classes.gridContainer}
           container
@@ -233,7 +253,8 @@ export const ImageUpload = () => {
           alignItems="center"
           spacing={2}
         >
-          <Grid item xs={12}>
+
+          {!data && <Grid item xs={12}>
             <Card className={`${classes.imageCard} ${!image ? classes.imageCardEmpty : ''}`}>
               {image && <CardActionArea>
                 <CardMedia
@@ -251,7 +272,36 @@ export const ImageUpload = () => {
                   onChange={onSelectFile}
                 />
               </CardContent>}
-              {data && <CardContent className={classes.detail}>
+
+              {isLoading && <CardContent className={classes.label_detail}>
+                <CircularProgress color="secondary" className={classes.loader} />
+                <Typography className={classes.title} variant="h6" noWrap>
+                  Scanning
+                </Typography>
+              </CardContent>}
+            </Card>
+          </Grid>}
+
+          {data && <Grid item xs={4}>
+            <Card className={`${classes.imageCard} ${!image ? classes.imageCardEmpty : ''}`}>
+              {image && <CardActionArea>
+                <CardMedia
+                  className={classes.media}
+                  image={preview}
+                  component="image"
+                  title="Contemplative Reptile"
+                />
+              </CardActionArea>
+              }
+              {!image && <CardContent className={classes.content}>
+                <DropzoneArea
+                  acceptedFiles={['image/*']}
+                  dropzoneText={"Drag and drop an image of a plant leaf to process"}
+                  onChange={onSelectFile}
+                />
+              </CardContent>}
+
+              {data && <CardContent className={classes.label_detail}>
                 <TableContainer component={Paper} className={classes.tableContainer}>
                   <Table className={classes.table} size="small" aria-label="simple table">
                     <TableHead className={classes.tableHead}>
@@ -278,11 +328,52 @@ export const ImageUpload = () => {
                 </Typography>
               </CardContent>}
             </Card>
-          </Grid>
+          </Grid>}
+
+          {data && <Grid item xs={8}>
+            <CardContent className={classes.detail}>
+              <TableContainer component={Paper} className={classes.tableContainer}>
+                <Table className={classes.table} size="big" aria-label="simple table">
+                  <TableBody className={classes.tableBody}>
+                    <TableRow className={classes.tableRow}>
+                      <TableCell component="th" scope="row" className={classes.tableCellHead}>{data.class}</TableCell>
+                      {/* <TableCell align="right" className={classes.tableCell}>{confidence}%</TableCell> */}
+                    </TableRow>
+                    <TableRow className={classes.tableRow}>
+                      <TableCell component="th" scope="row" className={classes.tableCell1}>{data.description}</TableCell>
+                      <TableCell component="th" scope="row" className={classes.tableCell1}>
+                        <img alt = {data.class} width={"250px"} src = {data.image_url} />
+                      </TableCell>
+                    </TableRow>
+                    <TableRow className={classes.tableRow}>
+                      <TableCell component="th" scope="row" className={classes.tableCell}>Recommended Steps:</TableCell>
+                    </TableRow>
+                    <TableRow className={classes.tableRow}>
+                      <TableCell component="th" scope="row" className={classes.tableCell1}>{data.poss_steps}</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+                <Table className={classes.table} size="big" aria-label="simple table">
+                    <TableRow className={classes.tableRow}>
+                      <TableCell component="th" scope="row" className={classes.tableCell}>Supplement</TableCell>
+                    </TableRow>
+                    <TableRow className={classes.tableRow}>
+                      <TableCell component="th" scope="row" className={classes.tableCell}>{data.supplement_name}</TableCell>
+                      <TableCell component="th" scope="row" className={classes.tableCell1}>
+                        <img alt = {data.class} width={"100px"} src = {data.supplement_img} />
+                      </TableCell>
+                      <TableCell component="th" scope="row" className={classes.tableCell1}>
+                        <a href = {data.buy_link}>BUY THIS SUPPLEMENT</a>
+                      </TableCell>
+                    </TableRow>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Grid>}
 
           {/* CLEAR BUTTON STARTS HERE */}
           {data &&
-            <Grid item className={classes.buttonGrid} >
+            <Grid item xs={12} className={classes.buttonGrid} >
 
               <ColorButton variant="contained" className={classes.clearButton} color="primary" component="span" size="large" onClick={clearData} startIcon={<Clear fontSize="large" />}>
                 Clear
@@ -290,7 +381,7 @@ export const ImageUpload = () => {
             </Grid>}
           {/* CLEAR BUTTON ENDS HERE */}
         </Grid >
-        
+
       </Container >
     </React.Fragment >
   );
